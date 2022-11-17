@@ -1,0 +1,250 @@
+---
+title: "Article Template"
+output:
+  pdf_document: default
+  word_document: default
+  html_document:
+    keep_md: true
+geometry: margin= 1.0in
+font-size: 11pt
+header-includes: 
+  - \usepackage{helvet}
+  - \renewcommand*\familydefault{\sfdefault}
+  - \usepackage{setspace}
+  - \doublespacing
+  - \usepackage[left]{lineno}
+  - \linenumbers
+  - \usepackage{colortbl}
+editor_options: 
+  chunk_output_type: console
+knit: (function(input, ...) {
+    rmarkdown::render(
+      input,
+      output_format = "html_document",
+      output_dir = "docs"
+    )
+  })
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE,
+                      message = FALSE,
+                      warning = FALSE)
+library(knitr)
+library(kableExtra)
+library(tidyverse)
+library(gt)
+library(gtsummary)
+library(webshot2)
+```
+
+# **`r rmarkdown::metadata$title`** 
+
+\vspace{10mm}
+
+**Running Title:**
+
+\vspace{10mm}
+
+Author Name 1 ${^\dagger}$ , Author Name 2, ...
+
+${\dagger}$ To whom correspondance should be addressed
+
+\vspace{10mm}
+ 
+Department of ...  
+... University  
+Address  
+
+\vspace{10mm}
+
+**Observation Format**
+
+\newpage
+
+## Abstract (... words)
+Here goes an **Abstract** text.
+
+## Importance (... words)
+Here goes an **Importance** text.
+
+* Importance I 
+  * Importance-I-a
+  * Importance-I-b
+* Importance II
+* Importance III
+
+\newpage
+
+## Introduction
+Here goes an **Introduction** text.
+
+\newpage
+
+## Results
+Here goes an **Results** text.
+
+example results from {gtsummary} package named `trial`.
+
+```{r}
+trial %>% head() %>% kbl()
+```
+
+
+### Results-I
+Here goes an **Results-I** text.
+
+### Results-II
+Here goes an **Results-II** text.
+
+\newpage
+
+## Conclusions
+Here goes an **Conclusions** text.
+
+* Conclusions-I
+  * Conclusions-I-a
+  * Conclusions-I-b
+* Conclusions-II
+* Conclusions-III
+
+\newpage
+
+## Materials & Methods
+Here goes an **Materials & Methods** text.
+
+
+\newpage
+
+## Tables
+Here  **Tables** text.
+
+\vspace{2mm}
+`table_1` using the {gtsummary} package
+
+```{r table_1}
+trial %>% 
+  select(trt, age, grade) %>%
+  tbl_summary(by = trt) %>%
+  add_p(pvalue_fun = ~style_pvalue(.x, digits = 2)) %>%
+  add_overall() %>%
+  add_n() %>%
+  modify_header(label ~ "Variable") %>%
+  modify_spanning_header(c("stat_1", "stat_2") ~ "Treatment Received") %>%
+  modify_footnote(
+    all_stat_cols() ~ "Median (IQR) or Frequency (%)") %>% 
+  as_gt() %>% 
+  as_latex()
+```
+
+**Table 1: with gtsummary package**
+
+\newpage
+
+`table_2` using the {gt} package
+
+\vspace{2mm}
+
+```{r table_2}
+trial %>%
+  dplyr::select(trt, age, grade) %>%
+  dplyr::slice(1:5) %>%
+  gt() %>%
+  tab_header(
+    title = md("`trial` Data from {gtsummary} package"),
+    subtitle = md("`trial` is an {gtsummary} dataset")
+  ) %>%
+  as_latex()
+```
+
+**Table 2: with {gt} package (needs manipulation in gt)**
+
+\vspace{2mm}
+
+\newpage
+
+`table_3` using the {gtsummary} & {kableExtra} package 
+{kableExtra} add caption of table within code give number of table by code.
+
+\arrayrulecolor{white}
+
+```{r table_3}
+trial %>% 
+  select(trt, age, grade) %>%
+  tbl_summary(by = trt) %>%
+  add_p(pvalue_fun = ~style_pvalue(.x, digits = 2)) %>%
+  add_overall() %>%
+  add_n() %>%
+  modify_header(label ~ "Variable", text_interpret = "md") %>%
+  modify_spanning_header(c("stat_1", "stat_2") ~ "Treatment Received") %>%
+  modify_footnote(
+    all_stat_cols() ~ "Median (IQR) or Frequency (%)") %>% 
+  as_kable_extra(caption = "Table 3 with {gtsummary} and {kableExtra} packages") %>% 
+  kable_styling(full_width = FALSE,
+                latex_options = "HOLD_position", 
+                font_size = 10)
+```
+
+\vspace{2mm}
+
+\newpage
+
+`table_4` using the {gtsummary} & {kableExtra} package
+
+\vspace{2mm}
+
+```{r table_4}
+trial %>% 
+  select(trt, age, grade) %>% 
+  tbl_summary(by = trt) %>%
+  add_p(pvalue_fun = ~style_pvalue(.x, digits = 2)) %>%
+  add_overall() %>%
+  add_n() %>%
+  modify_header(label ~ "**Variable**") %>%
+  modify_spanning_header(c("stat_1", "stat_2") ~ "**Treatment Received**") %>%
+  modify_footnote(all_stat_cols() ~ "Median (IQR) or Frequency (%)") %>%
+  modify_caption("**Patient Characteristics**") %>%
+  bold_labels() %>% 
+  as_kable_extra() %>% 
+  kable_styling(full_width = FALSE,
+                latex_options = "HOLD_position", 
+                font_size = 10, stripe_color = white)
+```
+
+\newpage
+
+## Figures
+
+Here goes a **Figures** text.
+
+\vspace{2mm}
+
+\includegraphics{figures/trial_plot.pdf}
+
+**Figure 1. trial plot with ggplot2**
+
+\newpage
+
+```{r cars-plot, fig.cap = "Sample figure for trial data with ggplot2"}
+trial_plot = trial %>%
+  select(1,2) %>% 
+  ggplot(aes(x = trt, y = age)) +
+  geom_boxplot()+
+  theme_bw()
+ggsave(plot = trial_plot,filename = "figures/trial_plot.tiff", width = 5, height = 5)
+ggsave(plot = trial_plot,filename = "figures/trial_plot.pdf", width = 5, height = 5)
+```
+
+```{r figure-1, fig.cap = "Sample figure for trial data with ggplot2"}
+knitr::include_graphics("figures/trial_plot.pdf")
+```
+
+\newpage
+
+## Acknowledgements
+Here goes an **Acknowledgements** text.
+
+\newpage
+
+## References
+
