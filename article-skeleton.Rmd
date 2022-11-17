@@ -1,8 +1,8 @@
 ---
 title: "Article Template"
 output:
-  pdf_document: default
   word_document: default
+  pdf_document: default
   html_document:
     keep_md: true
 geometry: margin= 1.0in
@@ -17,13 +17,8 @@ header-includes:
   - \usepackage{colortbl}
 editor_options: 
   chunk_output_type: console
-knit: (function(input, ...) {
-    rmarkdown::render(
-      input,
-      output_format = "html_document",
-      output_dir = "docs"
-    )
-  })
+# knit: (function(input, ...) {
+#     rmarkdown::render(
 ---
 
 ```{r setup, include=FALSE}
