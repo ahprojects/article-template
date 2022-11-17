@@ -17,8 +17,15 @@ header-includes:
   - \usepackage{colortbl}
 editor_options: 
   chunk_output_type: console
-# knit: (function(input, ...) {
-#     rmarkdown::render(
+knit: (function(input, ...) {
+    rmarkdown::render(
+      input,
+      output_format = "html_document",
+      output_file = "index.html",
+      output_dir = "docs"
+    )
+  }
+  )
 ---
 
 ```{r setup, include=FALSE}
